@@ -23,11 +23,6 @@ export function AssetDetailScreen({ holding: selectedHolding, accountId, onBack 
   const [confirmReset, setConfirmReset] = useState(false);
   // Long histories: draw 30 rows, then 50 more per tap, so the page opens instantly.
   const [tradeCount, setTradeCount] = useState(30);
-  // The trade table scrolls sideways only when narrower than its columns: a horizontal ScrollView takes the mouse wheel
-  // on macOS, so on wide windows it would stop the page from scrolling while the pointer is over the table.
-  const TABLE_MIN = 850;
-  const [tableWidth, setTableWidth] = useState(0);
-  const TableScroll = tableWidth > 0 && tableWidth < TABLE_MIN ? ScrollView : View;
   const c = mh.currency(holding);
   const trades = s.data.trades
     .filter(t => identity(t.assetType, t.ticker) === holding.identityKey && (!accountId || t.accountId === accountId))
@@ -88,21 +83,17 @@ export function AssetDetailScreen({ holding: selectedHolding, accountId, onBack 
       {trades.length === 0 ? (
         <Sub>동기화 후 거래 내역이 여기에 표시됩니다</Sub>
       ) : (
-        <View onLayout={e => setTableWidth(e.nativeEvent.layout.width)}>
-          <TableScroll {...(TableScroll === ScrollView ? { horizontal: true, directionalLockEnabled: true, showsHorizontalScrollIndicator: true, contentContainerStyle: { flexGrow: 1 } } : {})}>
-          <View style={{ minWidth: TableScroll === ScrollView ? TABLE_MIN : undefined, flexGrow: 1 }}>
+        <View>
           {trades.slice(0, tradeCount).map(t => (
-            <View key={t.id} style={{ flexDirection: 'row', paddingVertical: 9, columnGap: 16, alignItems: 'center' }}>
-              <T numberOfLines={1} style={[{ flex: 1.4, minWidth: 160 }, num]}>{Fmt.dateTime(t.date)}</T>
-              <T numberOfLines={1} style={{ width: 40, flexShrink: 0, color: t.side === 'buy' ? C.red : C.blue }}>{sideLabel[t.side]}</T>
-              <T numberOfLines={1} style={[{ flex: 1, minWidth: 100, textAlign: 'right' }, num]}>{Fmt.qty(t.quantity)}</T>
-              <T numberOfLines={1} style={[{ flex: 1, minWidth: 100, textAlign: 'right' }, num]}>{s.tradeAmount(t, t.price)}</T>
-              <T numberOfLines={1} style={[{ flex: 1.2, minWidth: 130, textAlign: 'right' }, num]}>{s.tradeAmount(t, t.quantity * t.price)}</T>
-              <Sub numberOfLines={1} style={{ flex: 1, minWidth: 120, textAlign: 'right' }}>{s.account(t.accountId)?.name}</Sub>
+            <View key={t.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 9 }}>
+              <T numberOfLines={1} style={{ width: 36, fontWeight: '700', color: t.side === 'buy' ? C.red : C.blue }}>{sideLabel[t.side]}</T>
+              <View style={{ flex: 1, gap: 1 }}>
+                <T numberOfLines={1} style={[{ fontWeight: '600' }, num]}>{Fmt.qty(t.quantity)}{holding.assetType === 'crypto' ? '' : '주'} × {s.tradeAmount(t, t.price)}</T>
+                <Sub numberOfLines={1} style={[{ fontSize: FS - 2 }, num]}>{Fmt.dateTime(t.date)} · {s.account(t.accountId)?.name}</Sub>
+              </View>
+              <T numberOfLines={1} style={[{ fontWeight: '700', flexShrink: 0 }, num]}>{s.tradeAmount(t, t.quantity * t.price)}</T>
             </View>
           ))}
-          </View>
-          </TableScroll>
           {trades.length > tradeCount ? (
             <Btn title={`더 보기 (${trades.length - tradeCount}건 남음)`} onPress={() => setTradeCount(n => n + 50)} style={{ marginTop: 8 }} />
           ) : null}
