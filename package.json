@@ -1,0 +1,37 @@
+{
+  "name": "MyFolioRN",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "react-native start",
+    "macos": "react-native run-macos",
+    "ios": "react-native run-ios",
+    "build:macos": "./scripts/build-macos.sh",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint App.tsx src",
+    "test": "node tests/toss-network.cjs && node tests/portfolio-live.cjs && node tests/toss-chart.cjs && node tests/fx.cjs && node tests/domain.cjs"
+  },
+  "dependencies": {
+    "react": "19.1.4",
+    "react-native": "0.81.6",
+    "react-native-macos": "0.81.9"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/preset-env": "^7.25.3",
+    "@babel/runtime": "^7.25.0",
+    "@react-native-community/cli": "20.0.0",
+    "@react-native-community/cli-platform-ios": "20.0.0",
+    "@react-native/babel-preset": "0.81.6",
+    "@react-native/eslint-config": "0.81.6",
+    "@react-native/metro-config": "0.81.6",
+    "@react-native/typescript-config": "0.81.6",
+    "@types/react": "^19.1.0",
+    "eslint": "^8.19.0",
+    "prettier": "2.8.8",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

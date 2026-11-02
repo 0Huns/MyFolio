@@ -1,0 +1,2 @@
+// Project-level signing settings; the team ID stays out of the repository.
+#include? "../signing.local.xcconfig"
